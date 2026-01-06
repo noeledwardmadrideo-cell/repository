@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>7 Cs of Communication</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #FFFFFF;
+      color: #1E3A8A;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 48rem;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 300;
+      margin-bottom: 3rem;
+    }
+
+    h2 {
+      font-size: 1.875rem;
+      font-weight: 300;
+      margin-bottom: 1rem;
+    }
+
+    .question-text {
+      font-size: 1.5rem;
+      font-weight: 400;
+      margin-bottom: 3rem;
+      line-height: 1.6;
+    }
+
+    .progress {
+      font-size: 0.875rem;
+      font-weight: 300;
+      opacity: 0.6;
+      margin-bottom: 4rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.25rem;
+      text-align: center;
+      border: 2px solid #1E3A8A;
+      background: #FFFFFF;
+      color: #1E3A8A;
+      margin-bottom: 2rem;
+      transition: border-color 150ms;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #FACC15;
+    }
+
+    button {
+      padding: 1rem 3rem;
+      font-size: 1.125rem;
+      border: 2px solid #1E3A8A;
+      background: #FFFFFF;
+      color: #1E3A8A;
+      cursor: pointer;
+      transition: all 150ms;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    button:hover:not(:disabled) {
+      background: #FACC15;
+    }
+
+    button:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    .option {
+      padding: 1.5rem;
+      text-align: left;
+      font-size: 1.25rem;
+      font-weight: 400;
+      margin-bottom: 1rem;
+    }
+
+    .option.selected {
+      background: #FACC15;
+      transform: scale(1.02);
+    }
+
+    .option.faded {
+      opacity: 0.4;
+    }
+
+    .divider {
+      margin: 2rem 0;
+      font-size: 0.875rem;
+      opacity: 0.4;
+    }
+
+    .feedback {
+      font-size: 1.875rem;
+      font-weight: 300;
+      margin-top: 2rem;
+      animation: fadeIn 300ms ease-out;
+    }
+
+    .player-answers {
+      font-size: 0.875rem;
+      opacity: 0.6;
+      margin-top: 1.5rem;
+    }
+
+    .player-answers span {
+      display: inline-block;
+      margin: 0 0.5rem;
+    }
+
+    .room-code {
+      font-size: 3.75rem;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      margin-bottom: 3rem;
+    }
+
+    .players-list {
+      margin-bottom: 3rem;
+    }
+
+    .players-list p {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .ranking {
+      margin-bottom: 4rem;
+    }
+
+    .rank-card {
+      padding: 1.5rem;
+      border: 2px solid #1E3A8A;
+      margin-bottom: 1.5rem;
+      transition: all 150ms;
+    }
+
+    .rank-card.winner {
+      background: #FACC15;
+      border-color: #FACC15;
+    }
+
+    .rank-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .rank-name {
+      font-size: 1.875rem;
+      font-weight: 300;
+    }
+
+    .rank-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.125rem;
+      opacity: 0.6;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .info-box {
+      background: #EFF6FF;
+      border: 2px solid #1E3A8A;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade {
+      animation: fadeIn 300ms ease-out;
+    }
+
+    .animate-slide {
+      animation: slideUp 300ms ease-out;
+    }
+
+    .transitioning {
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: all 300ms;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="lobbyScreen" class="animate-fade">
+      <h1>7 Cs of Communication</h1>
+      <input type="text" id="playerNameInput" placeholder="Your name">
+      <button onclick="createRoom()">Start Solo Game</button>
+      <div class="info-box">
+        This is a single-player version. For multiplayer, you'll need to set up a backend service like Firebase.
+      </div>
+    </div>
+
+    <div id="waitingScreen" class="hidden animate-fade">
+      <h1>Ready to Start?</h1>
+      <div class="players-list">
+        <p style="font-size: 0.875rem; font-weight: 300; opacity: 0.6; margin-bottom: 1rem;">Player:</p>
+        <div id="playersList"></div>
+      </div>
+      <button onclick="startGame()">Start Game</button>
+    </div>
+
+    <div id="gameScreen" class="hidden">
+      <div class="progress" id="progressText"></div>
+      <div id="questionContainer">
+        <h2 id="instructionText" class="animate-slide"></h2>
+        <p class="question-text animate-slide" id="questionText"></p>
+        <div id="optionsContainer"></div>
+        <div id="feedbackContainer"></div>
+      </div>
+    </div>
+
+    <div id="completeScreen" class="hidden animate-fade">
+      <h1>Final Results</h1>
+      <div class="ranking" id="rankingList"></div>
+      <button onclick="newGame()">New Game</button>
+    </div>
+  </div>
+
+  <script>
+    var GAMES_DATA = {
+      clarity: {
+        title: "Clarity",
+        instruction: "Clear or Confusing?",
+        questions: [
+          { text: "Meet me at the place we discussed.", options: ["Clear", "Confusing"], correct: 1 },
+          { text: "Meeting at Conference Room 3, Tuesday 2 PM.", options: ["Clear", "Confusing"], correct: 0 },
+          { text: "Let's catch up sometime soon.", options: ["Clear", "Confusing"], correct: 1 },
+          { text: "Submit your report by Friday 5 PM.", options: ["Clear", "Confusing"], correct: 0 },
+          { text: "We need to talk about that thing.", options: ["Clear", "Confusing"], correct: 1 }
+        ]
+      },
+      conciseness: {
+        title: "Conciseness",
+        instruction: "Which is more concise?",
+        questions: [
+          { text: "Choose the better version:", options: ["In my opinion, I think we should go", "We should go"], correct: 1 },
+          { text: "Choose the better version:", options: ["Thanks", "I wanted to take this opportunity to thank you"], correct: 0 },
+          { text: "Choose the better version:", options: ["Due to the fact that it's late", "Because it's late"], correct: 1 },
+          { text: "Choose the better version:", options: ["Let's meet", "Let's arrange a time to get together"], correct: 0 },
+          { text: "Choose the better version:", options: ["At this point in time", "Now"], correct: 1 }
+        ]
+      },
+      correctness: {
+        title: "Correctness",
+        instruction: "Which is correct?",
+        questions: [
+          { text: "Choose the correct version:", options: ["Your welcome", "You're welcome"], correct: 1 },
+          { text: "Choose the correct version:", options: ["She doesn't like it", "She don't like it"], correct: 0 },
+          { text: "Choose the correct version:", options: ["alot", "a lot"], correct: 1 },
+          { text: "Choose the correct version:", options: ["It's raining", "Its raining"], correct: 0 },
+          { text: "Choose the correct version:", options: ["I could of gone", "I could have gone"], correct: 1 }
+        ]
+      },
+      concreteness: {
+        title: "Concreteness",
+        instruction: "Specific or Vague?",
+        questions: [
+          { text: "We'll meet soon.", options: ["Specific", "Vague"], correct: 1 },
+          { text: "Meeting Tuesday at 3 PM in Room 205.", options: ["Specific", "Vague"], correct: 0 },
+          { text: "Send it to me later.", options: ["Specific", "Vague"], correct: 1 },
+          { text: "Email the file to john@company.com by noon.", options: ["Specific", "Vague"], correct: 0 },
+          { text: "Let's improve things.", options: ["Specific", "Vague"], correct: 1 }
+        ]
+      },
+      completeness: {
+        title: "Completeness",
+        instruction: "Complete or Incomplete?",
+        questions: [
+          { text: "Send the file.", options: ["Complete", "Incomplete"], correct: 1 },
+          { text: "Send the budget file to Sarah by 3 PM today.", options: ["Complete", "Incomplete"], correct: 0 },
+          { text: "Call me.", options: ["Complete", "Incomplete"], correct: 1 },
+          { text: "Review the proposal and send feedback by Thursday.", options: ["Complete", "Incomplete"], correct: 0 },
+          { text: "Please respond.", options: ["Complete", "Incomplete"], correct: 1 }
+        ]
+      },
+      courtesy: {
+        title: "Courtesy",
+        instruction: "Which is more polite?",
+        questions: [
+          { text: "Choose the better version:", options: ["You're wrong", "I see it differently"], correct: 1 },
+          { text: "Choose the better version:", options: ["Could you please help?", "I need help now"], correct: 0 },
+          { text: "Choose the better version:", options: ["You made a mistake", "Let's review this together"], correct: 1 },
+          { text: "Choose the better version:", options: ["Thank you for your time", "Hurry up"], correct: 0 },
+          { text: "Choose the better version:", options: ["That's stupid", "I have a different perspective"], correct: 1 }
+        ]
+      },
+      coherence: {
+        title: "Coherence",
+        instruction: "Which order makes sense?",
+        questions: [
+          { text: "Choose the logical sequence:", options: ["I woke up. I got dressed. I had breakfast.", "I had breakfast. I woke up. I got dressed."], correct: 0 },
+          { text: "Choose the logical sequence:", options: ["We launched. We planned. We built.", "We planned. We built. We launched."], correct: 1 },
+          { text: "Choose the logical sequence:", options: ["First mix. Then bake. Finally eat.", "First eat. Then bake. Finally mix."], correct: 0 },
+          { text: "Choose the logical sequence:", options: ["I'm celebrating. I got hired. I interviewed.", "I interviewed. I got hired. I'm celebrating."], correct: 1 },
+          { text: "Choose the logical sequence:", options: ["Turn on computer. Open email. Reply.", "Reply. Open email. Turn on computer."], correct: 0 }
+        ]
+      }
+    };
+
+    var gameState = {
+      playerName: '',
+      currentC: 0,
+      currentQuestion: 0,
+      selectedOption: null,
+      score: 0,
+      totalTime: 0,
+      startTime: null,
+      questionStartTime: null
+    };
+
+    var cKeys = Object.keys(GAMES_DATA);
+
+    function createRoom() {
+      var name = document.getElementById('playerNameInput').value.trim();
+      if (!name) {
+        alert('Please enter your name');
+        return;
+      }
+      
+      gameState.playerName = name;
+      gameState.score = 0;
+      gameState.totalTime = 0;
+      
+      localStorage.setItem('playerName', name);
+      showWaitingScreen();
+    }
+
+    function showWaitingScreen() {
+      document.getElementById('lobbyScreen').classList.add('hidden');
+      document.getElementById('waitingScreen').classList.remove('hidden');
+      
+      var playersList = document.getElementById('playersList');
+      playersList.innerHTML = '<p>' + gameState.playerName + '</p>';
+    }
+
+    function startGame() {
+      gameState.startTime = Date.now();
+      gameState.questionStartTime = Date.now();
+      gameState.currentC = 0;
+      gameState.currentQuestion = 0;
+      
+      document.getElementById('waitingScreen').classList.add('hidden');
+      document.getElementById('gameScreen').classList.remove('hidden');
+      displayQuestion();
+    }
+
+    function displayQuestion() {
+      var cData = GAMES_DATA[cKeys[gameState.currentC]];
+      var question = cData.questions[gameState.currentQuestion];
+      
+      document.getElementById('progressText').textContent = cData.title + ' — ' + (gameState.currentQuestion + 1) + ' of ' + cData.questions.length;
+      document.getElementById('instructionText').textContent = cData.instruction;
+      document.getElementById('questionText').textContent = question.text;
+      
+      var optionsContainer = document.getElementById('optionsContainer');
+      optionsContainer.innerHTML = '';
+      
+      for (var i = 0; i < question.options.length; i++) {
+        var btn = document.createElement('button');
+        btn.className = 'option';
+        btn.textContent = question.options[i];
+        btn.setAttribute('data-index', i);
+        btn.onclick = function() {
+          selectOption(parseInt(this.getAttribute('data-index')));
+        };
+        optionsContainer.appendChild(btn);
+      }
+      
+      document.getElementById('feedbackContainer').innerHTML = '';
+      gameState.selectedOption = null;
+    }
+
+    function selectOption(index) {
+      if (gameState.selectedOption !== null) return;
+      
+      var answerTime = Date.now() - gameState.questionStartTime;
+      gameState.selectedOption = index;
+      
+      var cData = GAMES_DATA[cKeys[gameState.currentC]];
+      var question = cData.questions[gameState.currentQuestion];
+      var correct = index === question.correct;
+      
+      gameState.score += correct ? 1 : 0;
+      gameState.totalTime += answerTime;
+      
+      var buttons = document.querySelectorAll('.option');
+      for (var i = 0; i < buttons.length; i++) {
+        if (i === index) {
+          buttons[i].classList.add('selected');
+        } else {
+          buttons[i].classList.add('faded');
+        }
+        buttons[i].disabled = true;
+      }
+      
+      var feedbackContainer = document.getElementById('feedbackContainer');
+      var feedbackDiv = document.createElement('div');
+      feedbackDiv.className = 'feedback';
+      feedbackDiv.textContent = correct ? 'Correct!' : 'Incorrect';
+      
+      feedbackContainer.innerHTML = '';
+      feedbackContainer.appendChild(feedbackDiv);
+      
+      setTimeout(function() {
+        document.getElementById('questionContainer').classList.add('transitioning');
+        setTimeout(function() {
+          moveToNext();
+          document.getElementById('questionContainer').classList.remove('transitioning');
+        }, 250);
+      }, 1200);
+    }
+
+    function moveToNext() {
+      var cData = GAMES_DATA[cKeys[gameState.currentC]];
+      
+      if (gameState.currentQuestion < cData.questions.length - 1) {
+        gameState.currentQuestion++;
+        gameState.questionStartTime = Date.now();
+        displayQuestion();
+      } else {
+        if (gameState.currentC < cKeys.length - 1) {
+          gameState.currentC++;
+          gameState.currentQuestion = 0;
+          gameState.questionStartTime = Date.now();
+          displayQuestion();
+        } else {
+          showComplete();
+        }
+      }
+    }
+
+    function showComplete() {
+      document.getElementById('gameScreen').classList.add('hidden');
+      document.getElementById('completeScreen').classList.remove('hidden');
+      
+      var totalQuestions = 0;
+      for (var key in GAMES_DATA) {
+        totalQuestions += GAMES_DATA[key].questions.length;
+      }
+      
+      var rankingList = document.getElementById('rankingList');
+      rankingList.innerHTML = '';
+      
+      var card = document.createElement('div');
+      card.className = 'rank-card winner';
+      
+      var rankHeader = document.createElement('div');
+      rankHeader.className = 'rank-header';
+      
+      var rankName = document.createElement('span');
+      rankName.className = 'rank-name';
+      rankName.textContent = gameState.playerName;
+      rankHeader.appendChild(rankName);
+      
+      var crown = document.createElement('span');
+      crown.style.fontSize = '1.5rem';
+      crown.textContent = '🎯';
+      rankHeader.appendChild(crown);
+      
+      var rankStats = document.createElement('div');
+      rankStats.className = 'rank-stats';
+      
+      var scoreSpan = document.createElement('span');
+      scoreSpan.textContent = 'Score: ' + gameState.score + '/' + totalQuestions;
+      
+      var timeSpan = document.createElement('span');
+      timeSpan.textContent = 'Time: ' + formatTime(gameState.totalTime);
+      
+      rankStats.appendChild(scoreSpan);
+      rankStats.appendChild(timeSpan);
+      
+      card.appendChild(rankHeader);
+      card.appendChild(rankStats);
+      rankingList.appendChild(card);
+    }
+
+    function formatTime(ms) {
+      var seconds = Math.floor(ms / 1000);
+      var minutes = Math.floor(seconds / 60);
+      var remainingSeconds = seconds % 60;
+      if (minutes > 0) {
+        return minutes + 'm ' + remainingSeconds + 's';
+      }
+      return seconds + 's';
+    }
+
+    function newGame() {
+      gameState = {
+        playerName: '',
+        currentC: 0,
+        currentQuestion: 0,
+        selectedOption: null,
+        score: 0,
+        totalTime: 0,
+        startTime: null,
+        questionStartTime: null
+      };
+      
+      document.getElementById('completeScreen').classList.add('hidden');
+      document.getElementById('lobbyScreen').classList.remove('hidden');
+    }
+
+    window.onload = function() {
+      var saved = localStorage.getItem('playerName');
+      if (saved) {
+        document.getElementById('playerNameInput').value = saved;
+      }
+    };
+  </script>
+</body>
+</html>
